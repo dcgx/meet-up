@@ -1,8 +1,9 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import toast, { Toaster } from "react-hot-toast";
 
-import { signInWithGitHub, onAuthStateChanged } from "../firebase";
+import { signInWithGitHub, onAuthStateChanged, signOut } from "../firebase";
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -15,12 +16,22 @@ export default function Home() {
     });
   }, []);
 
+  const handleSignOut = async () => {
+    signOut().then(() => {
+      toast.success("Successfully logged out");
+      setUser(null);
+      setAuthenticated(false);
+    });
+  };
+
   const handleSignInWithGitHub = async () => {
     signInWithGitHub()
       .then((user) => {
         // const { displayName, email, photoURL } = user;
         setUser(user);
         setAuthenticated(true);
+        console.log({ user });
+        toast.success(`Authenticated as ${user.email}`);
       })
       .catch(() => {
         setAuthenticated(false);
@@ -40,6 +51,7 @@ export default function Home() {
           <div>
             <h1 className="font-semibold">meetwi</h1>
           </div>
+
           <div>
             <button>Repositorio</button>
           </div>
@@ -55,7 +67,15 @@ export default function Home() {
 
           <div className="border w-full bg-gray-100 mt-10 py-14">
             {authenticated ? (
-              <div>{user.displayName}</div>
+              <div>
+                <div>{user.displayName}</div>
+                <button
+                  onClick={handleSignOut}
+                  className="px-6 py-3 mt-5 rounded-md bg-red-400 text-zinc-100 text-sm font-medium"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <div className="bg-white w-60 py-10 m-auto my-5 border border-gray-200 rounded-lg">
                 <strong className="font-semibold">Únete a Meetwi</strong>
@@ -70,6 +90,8 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      <Toaster />
 
       <footer></footer>
     </div>

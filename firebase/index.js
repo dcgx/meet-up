@@ -3,7 +3,8 @@ import {
   getAuth,
   GithubAuthProvider,
   signInWithPopup,
-  onAuthStateChanged as onAuthStateChangedFirebase,
+  signOut as signOutHandler,
+  onAuthStateChanged as onAuthStateChangedHandler,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -22,14 +23,16 @@ var provider = new GithubAuthProvider();
 var auth = getAuth();
 
 const mapUserFromFirebaseAuthToUser = (user) => {
-  let { displayName, email, photoURL } = user;
+  const { displayName, email, photoURL } = user;
   return { displayName, email, photoURL };
 };
 
 export const onAuthStateChanged = (onChange) => {
-  return onAuthStateChangedFirebase(auth, (user) => {
-    const normalizedUser = mapUserFromFirebaseAuthToUser(user);
-    onChange(normalizedUser);
+  return onAuthStateChangedHandler(auth, (user) => {
+    if (user) {
+      const normalizedUser = mapUserFromFirebaseAuthToUser(user);
+      onChange(normalizedUser);
+    }
   });
 };
 
@@ -37,4 +40,8 @@ export const signInWithGitHub = () => {
   return signInWithPopup(auth, provider).then((data) =>
     mapUserFromFirebaseAuthToUser(data.user)
   );
+};
+
+export const signOut = () => {
+  return signOutHandler(auth);
 };
