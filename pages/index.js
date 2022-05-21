@@ -1,17 +1,30 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
-import { signInWithGitHub } from "../firebase";
+import { signInWithGitHub, onAuthStateChanged } from "../firebase";
 
 export default function Home() {
+  const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  const handleSignInWithGitHub = async () => {
-    signInWithGitHub().then((user) => {
-      const { displayName, email, photoURL } = user;
+  useEffect(() => {
+    onAuthStateChanged((user) => {
       setUser(user);
+      setAuthenticated(true);
     });
+  }, []);
+
+  const handleSignInWithGitHub = async () => {
+    signInWithGitHub()
+      .then((user) => {
+        // const { displayName, email, photoURL } = user;
+        setUser(user);
+        setAuthenticated(true);
+      })
+      .catch(() => {
+        setAuthenticated(false);
+      });
   };
 
   return (
@@ -41,15 +54,19 @@ export default function Home() {
           </p>
 
           <div className="border w-full bg-gray-100 mt-10 py-14">
-            <div className="bg-white w-60 py-10 m-auto my-5 border border-gray-200 rounded-lg">
-              <strong className="font-semibold">Únete a Meetwi</strong>
-              <button
-                onClick={handleSignInWithGitHub}
-                className="px-6 py-3 mt-5 rounded-md bg-zinc-800 text-zinc-100 text-sm font-medium"
-              >
-                Iniciar con GitHub
-              </button>
-            </div>
+            {authenticated ? (
+              <div>{user.displayName}</div>
+            ) : (
+              <div className="bg-white w-60 py-10 m-auto my-5 border border-gray-200 rounded-lg">
+                <strong className="font-semibold">Únete a Meetwi</strong>
+                <button
+                  onClick={handleSignInWithGitHub}
+                  className="px-6 py-3 mt-5 rounded-md bg-zinc-800 text-zinc-100 text-sm font-medium"
+                >
+                  Iniciar con GitHub
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>

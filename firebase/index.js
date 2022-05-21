@@ -1,5 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GithubAuthProvider, signInWithPopup } from "firebase/auth";
+import {
+  getAuth,
+  GithubAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged as onAuthStateChangedFirebase,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCGLuL-BZpbDdphaWf7coXioLTX3KCyYNQ",
@@ -13,12 +18,23 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
-export const signInWithGitHub = () => {
-  var provider = new GithubAuthProvider();
-  var auth = getAuth();
-  return signInWithPopup(auth, provider).then((data) => {
-    const { user } = data;
-    const { displayName, email, photoURL } = user;
-    return { displayName, email, photoURL };
+var provider = new GithubAuthProvider();
+var auth = getAuth();
+
+const mapUserFromFirebaseAuthToUser = (user) => {
+  let { displayName, email, photoURL } = user;
+  return { displayName, email, photoURL };
+};
+
+export const onAuthStateChanged = (onChange) => {
+  return onAuthStateChangedFirebase(auth, (user) => {
+    const normalizedUser = mapUserFromFirebaseAuthToUser(user);
+    onChange(normalizedUser);
   });
+};
+
+export const signInWithGitHub = () => {
+  return signInWithPopup(auth, provider).then((data) =>
+    mapUserFromFirebaseAuthToUser(data.user)
+  );
 };
