@@ -1,48 +1,54 @@
-import Head from "next/head";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import toast, { Toaster } from "react-hot-toast";
-
-import { signInWithGitHub, onAuthStateChanged, signOut } from "../firebase";
-import { connect } from "twilio-video";
+import Head from "next/head"
+import { useEffect, useState } from "react"
+import toast, { Toaster } from "react-hot-toast"
+import { signInWithGitHub, onAuthStateChanged, signOut } from "../firebase"
+import { useRoomContext } from "../context/RoomContext"
+import { useRouter } from "next/router"
 
 export default function Home() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-  const [room, setRoom] = useState(null);
+  const router = useRouter()
+  const [authenticated, setAuthenticated] = useState(false)
+  const [user, setUser] = useState(null)
+  const { createRoom } = useRoomContext()
 
   useEffect(() => {
     onAuthStateChanged((user) => {
-      setUser(user);
-      setAuthenticated(true);
-    });
-  }, []);
+      setUser(user)
+      setAuthenticated(true)
+    })
+  }, [])
 
-  const handleNewRoom = () => {
-    // connect
-  };
+  const handleCreateRoom = () => {
+    createRoom({ username: user.username })
+      .then((roomId) => {
+        router.push("/room/[id]", `/room/${roomId}`)
+      })
+      .catch((error) => {
+        toast.error(error.message)
+      })
+  }
 
   const handleSignOut = async () => {
     signOut().then(() => {
-      toast.success("Successfully logged out");
-      setUser(null);
-      setAuthenticated(false);
-    });
-  };
+      toast.success("Successfully logged out")
+      setUser(null)
+      setAuthenticated(false)
+    })
+  }
 
   const handleSignInWithGitHub = async () => {
     signInWithGitHub()
       .then((user) => {
         // const { displayName, email, photoURL } = user;
-        setUser(user);
-        setAuthenticated(true);
-        console.log({ user });
-        toast.success(`Authenticated as ${user.email}`);
+        setUser(user)
+        setAuthenticated(true)
+        console.log({ user })
+        toast.success(`Authenticated as ${user.email}`)
       })
       .catch(() => {
-        setAuthenticated(false);
-      });
-  };
+        setAuthenticated(false)
+      })
+  }
 
   return (
     <div>
@@ -70,14 +76,14 @@ export default function Home() {
               Plataforma de videollamadas gratuitas y seguras.
             </h1>
             <p className="text-gray-700 mt-4 text-left">
-              Con Meetwei podrás crear y unirte a reuniones, hablar con tus
-              cercanos de manera fácil.
+              Con Meetwei podrás crear y unirte a reuniones, hablar con tus cercanos de manera
+              fácil.
             </p>
 
             <div className="text-left">
               {authenticated ? (
                 <button
-                  onClick={handleNewRoom}
+                  onClick={handleCreateRoom}
                   className="px-6 py-3 mt-5 rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
                 >
                   Nueva reunión
@@ -99,5 +105,5 @@ export default function Home() {
 
       <footer></footer>
     </div>
-  );
+  )
 }
