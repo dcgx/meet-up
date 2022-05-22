@@ -4,10 +4,12 @@ import Image from "next/image";
 import toast, { Toaster } from "react-hot-toast";
 
 import { signInWithGitHub, onAuthStateChanged, signOut } from "../firebase";
+import { connect } from "twilio-video";
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [room, setRoom] = useState(null);
 
   useEffect(() => {
     onAuthStateChanged((user) => {
@@ -15,6 +17,10 @@ export default function Home() {
       setAuthenticated(true);
     });
   }, []);
+
+  const handleNewRoom = () => {
+    // connect
+  };
 
   const handleSignOut = async () => {
     signOut().then(() => {
@@ -57,36 +63,34 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="w-full max-w-3xl mt-10 py-5 m-0 mx-auto text-center">
-          <h1 className="font-bold text-4xl lg:text-6xl mb-5">
-            La plataforma de videoconferencias gratuita
-          </h1>
-          <p className="text-gray-700 mt-4">
-            Con MeetApp podrás crear y unirte a reuniones
-          </p>
+        <div className="w-full h-full px-20 my-20 py-5 m-0 mx-auto text-center grid grid-cols-2">
+          <img src={"/img/hero.jpg"} layout="fill" />
+          <div className="flex flex-col items-start justify-center">
+            <h1 className="font-bold text-4xl lg:text-6xl mb-5 text-left">
+              Plataforma de videollamadas gratuitas y seguras.
+            </h1>
+            <p className="text-gray-700 mt-4 text-left">
+              Con Meetwei podrás crear y unirte a reuniones, hablar con tus
+              cercanos de manera fácil.
+            </p>
 
-          <div className="border w-full bg-gray-100 mt-10 py-14">
-            {authenticated ? (
-              <div>
-                <div>{user.displayName}</div>
+            <div className="text-left">
+              {authenticated ? (
                 <button
-                  onClick={handleSignOut}
-                  className="px-6 py-3 mt-5 rounded-md bg-red-400 text-zinc-100 text-sm font-medium"
+                  onClick={handleNewRoom}
+                  className="px-6 py-3 mt-5 rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
                 >
-                  Logout
+                  Nueva reunión
                 </button>
-              </div>
-            ) : (
-              <div className="bg-white w-60 py-10 m-auto my-5 border border-gray-200 rounded-lg">
-                <strong className="font-semibold">Únete a Meetwi</strong>
+              ) : (
                 <button
                   onClick={handleSignInWithGitHub}
                   className="px-6 py-3 mt-5 rounded-md bg-zinc-800 text-zinc-100 text-sm font-medium"
                 >
                   Iniciar con GitHub
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </main>
