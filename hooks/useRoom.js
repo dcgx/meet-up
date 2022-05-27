@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { createLocalTracks, connect } from "twilio-video"
+import toast from "react-hot-toast"
 
 export function useRoom() {
   const [token, setToken] = useState(null)
@@ -10,6 +11,7 @@ export function useRoom() {
   const [isLoading, setLoading] = useState(false)
   const [isSharingVideo, setSharingVideo] = useState(false)
   const [isSharingAudio, setSharingAudio] = useState(false)
+  const [isDomainSpeaker, setDomainSpeaker] = useState(null)
 
   useEffect(() => {
     setToken(localStorage.getItem("room.token"))
@@ -114,6 +116,8 @@ export function useRoom() {
     room,
     participants,
     isLoading,
+    isSharingVideo,
+    isSharingAudio,
     initializeRoom,
     createRoom,
     joinRoom,
