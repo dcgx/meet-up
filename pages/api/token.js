@@ -6,8 +6,9 @@ import { generateId } from "../../utils/generate-id"
 export default function handler(req, res) {
   let { username, roomId = null } = req.body
   const { TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET } = process.env
-
+  console.log({ TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET })
   const token = new AccessToken(TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET)
+
   if (req.method === "POST") {
     roomId = generateId()
   }

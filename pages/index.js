@@ -21,6 +21,7 @@ export default function Home() {
   const handleCreateRoom = () => {
     createRoom({ username: user.username })
       .then((roomId) => {
+        toast.success("Connected")
         router.push("/room/[id]", `/room/${roomId}`)
       })
       .catch((error) => {
