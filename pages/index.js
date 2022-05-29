@@ -8,8 +8,9 @@ import { useRouter } from "next/router"
 export default function Home() {
   const router = useRouter()
   const [authenticated, setAuthenticated] = useState(false)
+  const [room, setRoom] = useState(null)
   const [user, setUser] = useState(null)
-  const { createRoom } = useRoomContext()
+  const { createRoom, joinRoom } = useRoomContext()
 
   useEffect(() => {
     onAuthStateChanged((user) => {
@@ -27,6 +28,19 @@ export default function Home() {
       .catch((error) => {
         toast.error(error.message)
       })
+  }
+
+  const handleJoinRoom = (e) => {
+    joinRoom({ username: user.username, roomId: room })
+      .then((roomId) => {
+        toast.success("Connected")
+        router.push("/room/[id]", `/room/${roomId}`)
+      })
+      .catch((error) => {
+        toast.error(error.message)
+      })
+
+    // handleJoinRoom({ username, roomId })
   }
 
   const handleSignOut = async () => {
@@ -81,14 +95,32 @@ export default function Home() {
               fácil.
             </p>
 
-            <div className="text-left">
+            <div className="text-left w-full">
               {authenticated ? (
-                <button
-                  onClick={handleCreateRoom}
-                  className="px-6 py-3 mt-5 rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
-                >
-                  Nueva reunión
-                </button>
+                <div>
+                  <button
+                    onClick={handleCreateRoom}
+                    className="px-6 py-3 mt-5 rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
+                  >
+                    Nueva reunión
+                  </button>
+
+                  <div className="flex items-center  w-full">
+                    <input
+                      value={room}
+                      onInput={(e) => setRoom(e.target.value)}
+                      className="my-6 border py-3 px-3 shadow rounded focus:outline-none font-mono font-normal w-1/2"
+                      placeholder="Código de ejemplo: abc-mnps-xyx"
+                    />
+                    <button
+                      type="submit"
+                      onClick={handleJoinRoom}
+                      className="px-6 py-3 mx-5 rounded-md bg-sky-500 text-zinc-100 text-sm font-medium"
+                    >
+                      Unirse
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <button
                   onClick={handleSignInWithGitHub}

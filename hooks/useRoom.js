@@ -2,6 +2,9 @@ import { useState, useEffect } from "react"
 import { createLocalTracks, connect } from "twilio-video"
 import toast from "react-hot-toast"
 
+const DEBOUNCE_TIMEOUT = 320
+const MIN_ROOM_NAME_LENGTH = 16
+
 export function useRoom() {
   const [token, setToken] = useState(null)
   const [localTracks, setLocalTracks] = useState([])
@@ -24,11 +27,11 @@ export function useRoom() {
       room.participants.forEach(udpateParticipants)
       room.on("participantConnected", (participant) => {
         udpateParticipants()
-        Notification(`${participant.identity} se ha unido a la sala`)
+        toast(`${participant.identity} se ha unido a la sala`)
       })
       room.on("participantDisconnected", (participant) => {
         udpateParticipants()
-        Notification(`${participant.identity} se ha salido de la sala`)
+        toast(`${participant.identity} se ha salido de la sala`)
       })
 
       room.on("trackPublished", udpateParticipants)
@@ -57,6 +60,10 @@ export function useRoom() {
     }).catch(() => {})
 
     console.log({ tracks })
+
+    const token = localStorage.getItem("room.token")
+
+    console.log({ token })
 
     if (!token) {
       setLoading(false)
@@ -110,7 +117,36 @@ export function useRoom() {
     return Promise.resolve(roomId)
   }
 
-  const joinRoom = () => {}
+  const joinRoom = async ({ username, roomId }) => {
+    setLoading(true)
+
+    if (roomId === "" || roomId.length < MIN_ROOM_NAME_LENGTH) {
+      setLoading(false)
+      throw new Error(
+        "No se encontró la sala a la que intentas unirte. Por favor, verifica el nombre de la sala  y vuelve a intentarlo."
+      )
+    }
+
+    let countOfParticipants = participants.length
+
+    const data = await fetch("/api/token", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username }),
+    }).then((res) => res.json())
+
+    const [token] = data
+
+    localStorage.setItem("room.id", roomId)
+    localStorage.setItem("room.token", token)
+
+    setLoading(false)
+    setToken(token)
+
+    return Promise.resolve(roomId)
+  }
 
   return {
     room,
