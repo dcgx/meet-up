@@ -2,6 +2,8 @@ import React from "react"
 import { useRef, useEffect } from "react"
 import clsx from "clsx"
 
+import styles from "./Participant.module.css"
+
 export const Participant = ({
   participant,
   isLocal = false,
@@ -24,7 +26,7 @@ export const Participant = ({
   }, [participant])
 
   return (
-    <section>
+    <section className={styles.main}>
       <video
         className={clsx("w-full", isSharingVideo ? null : "hidden")}
         ref={videoRef}

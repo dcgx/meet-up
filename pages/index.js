@@ -97,15 +97,17 @@ export default function Home() {
 
             <div className="text-left w-full">
               {authenticated ? (
-                <div>
-                  <button
-                    onClick={handleCreateRoom}
-                    className="px-6 py-3 mt-5 rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
-                  >
-                    Nueva reunión
-                  </button>
+                <div className="flex items-center justify-between">
+                  <div className="items-center flex">
+                    <button
+                      onClick={handleCreateRoom}
+                      className="px-6 py-3  rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
+                    >
+                      Nueva reunión
+                    </button>
+                  </div>
 
-                  <div className="flex items-center  w-full">
+                  <div className="flex-1 mx-5 items-center">
                     <input
                       value={room}
                       onInput={(e) => setRoom(e.target.value)}
