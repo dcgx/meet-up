@@ -1,6 +1,6 @@
-# Meetwi
+# meet-up
 
-With Meetwi.app you can:
+With meet-up you can:
 
 - Create multiple rooms
 - Share your room's code with other participants
@@ -13,3 +13,4 @@ With Meetwi.app you can:
 
 - [Next.js](https://nextjs.org/)
 - [Firebase](https://firebase.google.com/)
+- [Twillio Video](https://www.twilio.com/docs/video)

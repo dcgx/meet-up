@@ -27,3 +27,37 @@ a {
   gap: 1rem;
   padding: 1rem;
 }
+
+.room-details-aside {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  bottom: 80px;
+  background: #fff;
+  width: 360px;
+  border-radius: 1rem;
+}
+
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown {
+  max-height: 861px;
+  position: absolute;
+  bottom: 50px;
+  left: 20px;
+  min-width: 16.26rem;
+  background: #fff;
+  border-radius: 10px;
+}
+.dropdown li {
+  color: #202124;
+  display: flex;
+  padding: 1rem 20px;
+}
+.dropdown li:hover {
+  background: #f4f4f5;
+  cursor: pointer;
+  border-radius: 10px;
+}
