@@ -1,7 +1,7 @@
 import Head from "next/head"
 import React, { useState, useEffect } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import Participant from "../../components/Participant/Participant"
+import LocalParticipant from "../../components/LocalParticipant/LocalParticipant"
 import { useRoomContext } from "../../context/RoomContext"
 import { BiMicrophone, BiCopy } from "react-icons/bi"
 import { BsCameraVideoOff } from "react-icons/bs"
@@ -20,7 +20,6 @@ const RoomDetails = () => {
 
   useEffect(() => {
     initializeRoom().then(setRoomName)
-    console.log({ room }, "room")
   }, [])
 
   return (
@@ -35,16 +34,12 @@ const RoomDetails = () => {
               participants.length > 0 && "grid-participants"
             )}
           >
-            <Participant
+            <LocalParticipant
               participant={room.localParticipant}
               isSharingAudio={isSharingAudio}
               isSharingVideo={isSharingVideo}
               isDomainSpeaker={isDomainSpeaker}
             />
-
-            {/* {participants.map((participant) => (
-              <p>- {participant.identity}</p>
-            ))} */}
           </section>
         ) : (
           <section>conecntando...</section>

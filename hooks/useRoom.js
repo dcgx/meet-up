@@ -59,21 +59,13 @@ export function useRoom() {
       video: { facingMode: "user" },
     }).catch(() => {})
 
-    console.log({ tracks })
-
     const token = localStorage.getItem("room.token")
-
-    console.log({ token })
-
     if (!token) {
       setLoading(false)
       throw new Error("Hubo un problema al conectarte a la sala.")
     }
 
     const roomId = localStorage.getItem("room.id")
-
-    console.log({ roomId })
-    console.log({ token })
 
     const videoRoom = await connect(token, {
       dominantSpeaker: true,
@@ -85,7 +77,6 @@ export function useRoom() {
       console.log({ err })
     })
 
-    console.log({ videoRoom })
     setSharingVideo(!!tracks)
     setSharingAudio(!!tracks)
     !!tracks && setLocalTracks(tracks)
