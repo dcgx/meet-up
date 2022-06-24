@@ -11,8 +11,16 @@ const RoomDetails = () => {
   const [isShowRoomDetails, setShowRoomDetails] = useState(false)
   const [isShowDropdown, setShowDropdown] = useState(false)
   const [roomName, setRoomName] = useState(null)
-  const { room, participants, isSharingVideo, isSharingAudio, isDomainSpeaker, initializeRoom } =
-    useRoomContext()
+  const {
+    room,
+    participants,
+    isSharingVideo,
+    isSharingAudio,
+    isDomainSpeaker,
+    initializeRoom,
+    toggleAudio,
+    toggleVideo,
+  } = useRoomContext()
 
   const handleClickToCopyOnClipboard = () => {
     toast("Enlace de la reunión copiado!")
@@ -51,10 +59,16 @@ const RoomDetails = () => {
               <h4 className="text-lg font-medium">uzc-mcxx-yez</h4>
             </section>
             <section className="flex items-center justify-center">
-              <button className="bg-zinc-700 p-3 rounded-full mx-2 hover:bg-zinc-600">
+              <button
+                onClick={toggleAudio}
+                className="bg-zinc-700 p-3 rounded-full mx-2 hover:bg-zinc-600"
+              >
                 <BiMicrophone size={22} />
               </button>
-              <button className="bg-red-700 p-3 rounded-full mx-2 hover:bg-red-600">
+              <button
+                onClick={toggleVideo}
+                className="bg-red-700 p-3 rounded-full mx-2 hover:bg-red-600"
+              >
                 <BsCameraVideoOff size={22} />
               </button>
               <div className="dropdown-wrapper">

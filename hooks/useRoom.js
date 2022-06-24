@@ -139,6 +139,45 @@ export function useRoom() {
     return Promise.resolve(roomId)
   }
 
+  const toggleVideo = async () => {
+    if (localTracks?.length === 0) {
+      const tracks = await Video.createLocalTracks({
+        audio: { facingMode: "user" },
+        video: { facingMode: "user" },
+      }).catch(() => {})
+      setLocalTracks(tracks)
+      return
+    }
+
+    const track = localTracks.find((track) => track.kind === "video")
+
+    if (track.isEnabled) {
+      track.disable()
+      setSharingVideo(false)
+      room.localParticipant.unpublishTrack(track)
+    } else {
+      track.enable()
+      setSharingVideo(true)
+      room.localParticipant.publishTrack(track)
+    }
+  }
+
+  const toggleAudio = () => {
+    if (localTracks?.length === 0) return
+
+    const track = localTracks.find((track) => track.kind === "audio")
+
+    if (track.isEnabled) {
+      track.disable()
+      setSharingAudio(false)
+      room.localParticipant.unpublishTrack(track)
+    } else {
+      track.enable()
+      setSharingAudio(true)
+      room.localParticipant.publishTrack(track)
+    }
+  }
+
   return {
     room,
     participants,
@@ -148,5 +187,7 @@ export function useRoom() {
     initializeRoom,
     createRoom,
     joinRoom,
+    toggleVideo,
+    toggleAudio,
   }
 }
