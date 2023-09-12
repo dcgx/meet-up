@@ -1,15 +1,19 @@
 import Head from "next/head"
+import clsx from "clsx"
 import React, { useState, useEffect } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import LocalParticipant from "../components/LocalParticipant"
-import RemoteParticipant from "../components/RemoteParticipant"
-import Spinner from "../components/Spinner"
+
+import { VideoCallProvider } from "../context/VideoCallContext"
 import { useRoomContext } from "../context/RoomContext"
+import { useTime } from "../hooks/useTime"
+
 import { BiMicrophone, BiCopy, BiMicrophoneOff } from "react-icons/bi"
 import { BsCameraVideoOff, BsCameraVideo } from "react-icons/bs"
 import { AiOutlineInfoCircle, AiOutlineClose, AiOutlineMore } from "react-icons/ai"
-import clsx from "clsx"
-import { useTime } from "../hooks/useTime"
+import LocalParticipant from "../components/LocalParticipant"
+import RemoteParticipant from "../components/RemoteParticipant"
+import Spinner from "../components/Spinner"
+import { VideoCall } from "../components/VideoCall"
 
 const RoomDetails = () => {
   const [isShowRoomDetails, setShowRoomDetails] = useState(false)
@@ -37,7 +41,7 @@ const RoomDetails = () => {
   }, [])
 
   return (
-    <>
+    <VideoCallProvider>
       <Head>
         <title>Talki👾Meet | {roomName || "Contectado..."}</title>
         <link rel="icon" href="/favicon.ico" />
@@ -45,29 +49,7 @@ const RoomDetails = () => {
       </Head>{" "}
       <main className="grid h-screen">
         {room ? (
-          <section
-            className={clsx(
-              "bg-zinc-900 p-6 gap-4 ",
-              participants.length === 0 && "flex items-center justify-center",
-              participants.length > 0 &&
-                "grid grid-cols-participants-layout grid-rows-participants-layout justify-center lg:justify-start"
-            )}
-          >
-            <LocalParticipant
-              participant={room.localParticipant}
-              isSharingVideo={isSharingVideo}
-              isSharingAudio={isSharingAudio}
-              isDomainSpeaker={isDomainSpeaker}
-            />
-
-            {participants.map((participant) => (
-              <RemoteParticipant
-                key={participant.sid}
-                participant={participant}
-                isDomainSpeaker={isDomainSpeaker}
-              />
-            ))}
-          </section>
+          <VideoCall />
         ) : (
           <section className="bg-zinc-900 flex flex-col justify-center items-center gap-4 text-zinc-50">
             <Spinner className="text-indigo-300" />
@@ -135,6 +117,7 @@ const RoomDetails = () => {
             </section>
           </div>
         </footer>
+        
         {isShowRoomDetails && (
           <aside className="room-details-aside">
             <div className="p-5">
@@ -163,7 +146,7 @@ const RoomDetails = () => {
         )}
       </main>
       <Toaster />
-    </>
+    </VideoCallProvider>
   )
 }
 
