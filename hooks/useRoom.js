@@ -89,7 +89,7 @@ export function useRoom() {
   const createRoom = async ({ username }) => {
     setLoading(true)
 
-    const data = await fetch("/api/token", {
+    const data = await fetch("/api/get-token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +111,7 @@ export function useRoom() {
   const joinRoom = async ({ username, roomId }) => {
     setLoading(true)
 
-    if (roomId === "" || roomId.length < MIN_ROOM_NAME_LENGTH) {
+    if (roomId === "" || roomId.length < 12) {
       setLoading(false)
       throw new Error(
         "No se encontró la sala a la que intentas unirte. Por favor, verifica el nombre de la sala  y vuelve a intentarlo."
@@ -120,7 +120,7 @@ export function useRoom() {
 
     let countOfParticipants = participants.length
 
-    const data = await fetch("/api/token", {
+    const data = await fetch("/api/get-token", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

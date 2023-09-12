@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { BsMicMute } from "react-icons/bs"
 import { useEffect, useRef } from 'react';
 
-export function RemoteParticipant({ participant, isDomainSpeaker }) {
+export default function RemoteParticipant({ participant, isDomainSpeaker }) {
 	const videoRef = useRef();
 	const audioRef = useRef();
 	const isSharingVideo = Array.from(participant.videoTracks.values()).length;

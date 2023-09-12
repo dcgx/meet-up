@@ -1,8 +1,6 @@
 import React from "react"
 import { useRef, useEffect } from "react"
 import clsx from "clsx"
-
-import styles from "./LocalParticipant.module.css"
 import { BsMicMute } from "react-icons/bs"
 
 export const LocalParticipant = ({
