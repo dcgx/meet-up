@@ -24,7 +24,7 @@ export default function Home() {
     createRoom({ username: user.username })
       .then((roomId) => {
         toast.success("Connected")
-        router.push("/room/[id]", `/room/${roomId}`)
+        router.push("/[roomId]", `/${roomId}`)
       })
       .catch((error) => {
         toast.error(error.message)
@@ -35,13 +35,11 @@ export default function Home() {
     joinRoom({ username: user.username, roomId: room })
       .then((roomId) => {
         toast.success("Connected")
-        router.push("/room/[id]", `/room/${roomId}`)
+        router.push("/[roomId]", `/${roomId}`)
       })
       .catch((error) => {
         toast.error(error.message)
       })
-
-    // handleJoinRoom({ username, roomId })
   }
 
   const handleSignOut = async () => {

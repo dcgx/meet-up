@@ -1,15 +1,15 @@
 import Head from "next/head"
 import React, { useState, useEffect } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import LocalParticipant from "../../components/LocalParticipant"
-import RemoteParticipant from "../../components/RemoteParticipant"
-import Spinner from "../../components/Spinner"
-import { useRoomContext } from "../../context/RoomContext"
+import LocalParticipant from "../components/LocalParticipant"
+import RemoteParticipant from "../components/RemoteParticipant"
+import Spinner from "../components/Spinner"
+import { useRoomContext } from "../context/RoomContext"
 import { BiMicrophone, BiCopy, BiMicrophoneOff } from "react-icons/bi"
 import { BsCameraVideoOff, BsCameraVideo } from "react-icons/bs"
 import { AiOutlineInfoCircle, AiOutlineClose, AiOutlineMore } from "react-icons/ai"
 import clsx from "clsx"
-import { useTime } from "../../hooks/useTime"
+import { useTime } from "../hooks/useTime"
 
 const RoomDetails = () => {
   const [isShowRoomDetails, setShowRoomDetails] = useState(false)
