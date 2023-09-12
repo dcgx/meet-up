@@ -25,7 +25,12 @@ export const LocalParticipant = ({
   }, [participant])
 
   return (
-    <section className="relative">
+    <section
+      className={clsx(
+        "bg-zinc-800 rounded-lg aspect-video overflow-hidden relative group border border-zinc-800 min-w-full",
+        isDomainSpeaker && "shadow-lg shadow-emerald-600"
+      )}
+    >
       <section className="absolute text-white right-0 p-5">
         {!isSharingAudio && <BsMicMute stroke={2} size={20} />}
       </section>
