@@ -1,5 +1,5 @@
 import { videoChatToken } from "../../utils/videoChatToken"
-import { generateId } from "../../utils/generate-id"
+import { generateId } from "../../utils/generateId"
 
 export default function handler(req, res) {
   const sendTokenResponse = (token, room, res) => {

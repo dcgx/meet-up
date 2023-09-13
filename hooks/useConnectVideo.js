@@ -8,8 +8,6 @@ function useConnectVideo(roomName) {
   const [loading, setLoading] = useState(false)
   const { token, setParticipants, setRoom, setDominantSpeaker } = useRoomContext()
 
-  console.log(token, "token")
-
   useEffect(() => {
     if (!token) {
       router.push("/")

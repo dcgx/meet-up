@@ -13,18 +13,13 @@ function Participant({ participant, speaking }) {
     videoRef,
     audioRef,
   })
-  
+
   return (
-    <div
-      className={clsx(
-        "bg-zinc-800 rounded-lg aspect-video overflow-hidden relative group border border-zinc-800 min-w-full",
-        false && "shadow-lg shadow-emerald-600"
-      )}
-    >
-      {speaking && "speaking"}
-      <video autoPlay={true} ref={videoRef} />
+    <div className="w-full h-full rounded-xl overflow-hidden relative">
+      {/* {speaking && "speaking"} */}
+      <video className="object-cover rounded-xl w-full h-full" autoPlay={true} ref={videoRef} />
       <audio autoPlay={true} ref={audioRef} />
-      <p>{participant.identity}</p>
+      <p className="absolute bottom-3 left-3 m-0 p-0 text-white">{participant.identity}</p>
     </div>
   )
 }
