@@ -1,9 +1,10 @@
 import Head from "next/head"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
 import { useRoomContext } from "../context/RoomContext"
 import { useRouter } from "next/router"
 import { AiFillGithub } from "react-icons/ai"
+import { HiOutlineLogout } from "react-icons/hi"
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react"
 
 export default function Home() {
@@ -64,10 +65,21 @@ export default function Home() {
             <h1 className="font-bold text-3xl text-slate-700">Talki👾meet</h1>
           </div>
 
-          <a className="flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 border border-slate-300 px-5 py-2 rounded-lg">
-            <AiFillGithub size={26} />
-            Repositorio
-          </a>
+          <div className="flex gap-4">
+            <a className="flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 border border-slate-300 px-5 py-2 rounded-lg">
+              <AiFillGithub size={26} />
+              Repositorio
+            </a>
+
+            {isAuthenticated && (
+              <a
+                onClick={() => supabase.auth.signOut()}
+                className="flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 border border-slate-300 px-5 py-2 rounded-lg"
+              >
+                <HiOutlineLogout size={26} />
+              </a>
+            )}
+          </div>
         </header>
 
         <div className="w-full h-full px-20 my-20 py-5 m-0 mx-auto text-center grid grid-cols-2">
