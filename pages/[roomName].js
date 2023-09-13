@@ -13,32 +13,40 @@ import { AiOutlineInfoCircle, AiOutlineClose, AiOutlineMore } from "react-icons/
 import LocalParticipant from "../components/LocalParticipant"
 import RemoteParticipant from "../components/RemoteParticipant"
 import Spinner from "../components/Spinner"
-import { VideoCall } from "../components/VideoCall"
+import { VideoCall, VideoCallConnecting } from "../components/VideoCall"
+import { useRouter } from "next/router"
+import { useConnectVideo } from "../hooks/useConnectVideo"
 
 const RoomDetails = () => {
-  const [isShowRoomDetails, setShowRoomDetails] = useState(false)
-  const [isShowDropdown, setShowDropdown] = useState(false)
-  const [roomName, setRoomName] = useState(null)
-  const [time] = useTime()
+  const router = useRouter()
+  const { roomName } = router.query
+  const { loading: loadingVideo } = useConnectVideo(roomName)
+  console.log(loadingVideo, "loadingVideo")
+  console.log(roomName, "roomName")
 
-  const {
-    room,
-    participants,
-    isSharingVideo,
-    isSharingAudio,
-    isDomainSpeaker,
-    initializeRoom,
-    toggleAudio,
-    toggleVideo,
-  } = useRoomContext()
+  // const [isShowRoomDetails, setShowRoomDetails] = useState(false)
+  // const [isShowDropdown, setShowDropdown] = useState(false)
+  // const [roomName, setRoomName] = useState(null)
+  // const [time] = useTime()
 
-  const handleClickToCopyOnClipboard = () => {
-    toast("Enlace de la reunión copiado!")
-  }
+  // const {
+  //   room,
+  //   participants,
+  //   isSharingVideo,
+  //   isSharingAudio,
+  //   isDomainSpeaker,
+  //   initializeRoom,
+  //   toggleAudio,
+  //   toggleVideo,
+  // } = useRoomContext()
 
-  useEffect(() => {
-    initializeRoom().then(setRoomName)
-  }, [])
+  // const handleClickToCopyOnClipboard = () => {
+  //   toast("Enlace de la reunión copiado!")
+  // }
+
+  // useEffect(() => {
+  //   initializeRoom().then(setRoomName)
+  // }, [])
 
   return (
     <VideoCallProvider>
@@ -48,16 +56,17 @@ const RoomDetails = () => {
         <meta name="description" content="La plataforma de videoconferencias gratuita" />
       </Head>{" "}
       <main className="grid h-screen">
-        {room ? (
+        {loadingVideo ? <VideoCallConnecting /> : <VideoCall roomName={roomName} />}
+        {/* {room ? (
           <VideoCall />
         ) : (
           <section className="bg-zinc-900 flex flex-col justify-center items-center gap-4 text-zinc-50">
             <Spinner className="text-indigo-300" />
             <p className="font-medium text-xl">Contectando...</p>
           </section>
-        )}
+        )} */}
 
-        <footer className="fixed bottom-0 h-16 w-full" style={{ background: "#202124" }}>
+        {/* <footer className="fixed bottom-0 h-16 w-full" style={{ background: "#202124" }}>
           <div className="grid grid-cols-3 h-full text-white">
             <section className="justify-self-start flex items-center gap-4 text-sm font-semibold w-[56px] lg:w-auto">
               <p className="hidden lg:block">{time}</p>
@@ -143,7 +152,7 @@ const RoomDetails = () => {
               </section>
             </div>
           </aside>
-        )}
+        )} */}
       </main>
       <Toaster />
     </VideoCallProvider>

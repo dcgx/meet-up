@@ -1,21 +1,43 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
-import AccessToken, { VideoGrant } from "twilio/lib/jwt/AccessToken"
+import { videoChatToken } from "../../utils/videoChatToken"
 import { generateId } from "../../utils/generate-id"
 
 export default function handler(req, res) {
-  let { username, roomId = null } = req.body
-  const { TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET } = process.env
-  const token = new AccessToken(TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET)
-
-  if (req.method === "POST") {
-    roomId = generateId()
+  const sendTokenResponse = (token, room, res) => {
+    return res.send(
+      JSON.stringify({
+        token: token.toJwt(),
+        room,
+      })
+    )
   }
 
-  let videoGrant = new VideoGrant({ room: roomId })
+  console.log(req.body, "req.query")
+  console.log(req.method, "req.method")
 
-  token.addGrant(videoGrant)
-  token.identity = username
-
-  res.status(200).json([token?.toJwt(), roomId])
+  if (req.method === "GET") {
+    const identity = req.query.identity
+    const room = generateId()
+    if (!identity || !room) {
+      return res.status(400).send("Identity and Room required")
+    }
+    const token = videoChatToken(identity, room)
+    sendTokenResponse(token, room, res)
+  } else if (req.method === "POST") {
+    const identity = req.body.identity
+    const room = generateId()
+    if (!identity || !room) {
+      return res.status(400).send("Identity and Room required")
+    }
+    const token = videoChatToken(identity, room)
+    sendTokenResponse(token, room, res)
+  } else if (req.method === "PUT") {
+    const identity = req.body.identity
+    const room = req.body.room
+    console.log({identity, room}, "PUT")
+    if (!identity || !room) {
+      return res.status(400).send("Identity and Room required")
+    }
+    const token = videoChatToken(identity, room)
+    sendTokenResponse(token, room, res)
+  }
 }

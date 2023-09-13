@@ -1,4 +1,4 @@
-import { createContext } from "react"
+import { createContext, useContext } from "react"
 import { useVideoCall } from "../hooks/useVideoCall"
 
 const VideoCallContext = createContext()

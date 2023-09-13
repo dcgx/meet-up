@@ -15,42 +15,44 @@ export function useRoom() {
   const [isSharingVideo, setSharingVideo] = useState(false)
   const [isSharingAudio, setSharingAudio] = useState(false)
   const [isDomainSpeaker, setDomainSpeaker] = useState(null)
+  const [dominantSpeaker, setDominantSpeaker] = useState([])
 
-  useEffect(() => {
-    setToken(localStorage.getItem("room.token"))
-  }, [])
+  // useEffect(() => {
+  //   setToken(localStorage.getItem("room.token"))
+  // }, [])
 
-  useEffect(() => {
-    const udpateParticipants = () => setParticipants(Array.from(room.participants.values()))
+  // useEffect(() => {
+  //   const udpateParticipants = () => setParticipants(Array.from(room.participants.values()))
 
-    if (room) {
-      room.participants.forEach(udpateParticipants)
-      room.on("participantConnected", (participant) => {
-        udpateParticipants()
-        toast(`${participant.identity} se ha unido a la sala`)
-      })
-      room.on("participantDisconnected", (participant) => {
-        udpateParticipants()
-        toast(`${participant.identity} se ha salido de la sala`)
-      })
+  //   if (room) {
+  //     room.participants.forEach(udpateParticipants)
+  //     room.on("participantConnected", (participant) => {
+  //       udpateParticipants()
+  //       toast(`${participant.identity} se ha unido a la sala`)
+  //     })
+  //     room.on("participantDisconnected", (participant) => {
+  //       udpateParticipants()
+  //       toast(`${participant.identity} se ha salido de la sala`)
+  //     })
 
-      room.on("trackPublished", udpateParticipants)
-      room.on("trackUnpublished", udpateParticipants)
-      room.on("disconnected", () => {
-        toast.success("Has salido de la sala")
-      })
-      room.on("dominantSpeakerChanged", (participant) => {
-        setDomainSpeaker(participant?.identity === room.localParticipant.identity)
-      })
+  //     room.on("trackPublished", udpateParticipants)
+  //     room.on("trackUnpublished", udpateParticipants)
+  //     room.on("disconnected", () => {
+  //       toast.success("Has salido de la sala")
+  //     })
+  //     room.on("dominantSpeakerChanged", (participant) => {
+  //       setDomainSpeaker(participant?.identity === room.localParticipant.identity)
+  //     })
 
-      return () => {
-        room.off("participantConnected", udpateParticipants)
-        room.off("participantDisconnected", udpateParticipants)
-        room.off("trackPublished", udpateParticipants)
-        room.off("trackUnpublished", udpateParticipants)
-      }
-    }
-  }, [room])
+  //     return () => {
+  //       room.off("participantConnected", udpateParticipants)
+  //       room.off("participantDisconnected", udpateParticipants)
+  //       room.off("trackPublished", udpateParticipants)
+  //       room.off("trackUnpublished", udpateParticipants)
+  //     }
+  //   }
+  // }, [room])
+
   const initializeRoom = async () => {
     setLoading(true)
 
@@ -94,23 +96,22 @@ export function useRoom() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username }),
+      body: JSON.stringify({ identity: username }),
     }).then((res) => res.json())
 
-    const [token, roomId] = data
+    console.log(data, "data")
 
-    localStorage.setItem("room.id", roomId)
-    localStorage.setItem("room.token", token)
+    const { token, room } = data
 
     setLoading(false)
     setToken(token)
 
-    return Promise.resolve(roomId)
+    return Promise.resolve(room)
   }
 
   const joinRoom = async ({ username, roomId }) => {
     setLoading(true)
-
+    console.log({ username, roomId })
     if (roomId === "" || roomId.length < 12) {
       setLoading(false)
       throw new Error(
@@ -125,10 +126,11 @@ export function useRoom() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username }),
+      body: JSON.stringify({ identity: username, room: roomId }),
     }).then((res) => res.json())
 
-    const [token] = data
+    console.log(data, "data")
+    const { token } = data
 
     localStorage.setItem("room.id", roomId)
     localStorage.setItem("room.token", token)
@@ -180,10 +182,15 @@ export function useRoom() {
 
   return {
     room,
+    token,
     participants,
     isLoading,
     isSharingVideo,
     isSharingAudio,
+    dominantSpeaker,
+    setParticipants,
+    setRoom,
+    setDominantSpeaker,
     initializeRoom,
     createRoom,
     joinRoom,

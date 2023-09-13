@@ -22,9 +22,9 @@ export default function Home() {
 
   const handleCreateRoom = () => {
     createRoom({ username: user.username })
-      .then((roomId) => {
+      .then((roomName) => {
         toast.success("Connected")
-        router.push("/[roomId]", `/${roomId}`)
+        router.push("/[roomName]", `/${roomName}`)
       })
       .catch((error) => {
         toast.error(error.message)
@@ -32,10 +32,11 @@ export default function Home() {
   }
 
   const handleJoinRoom = (e) => {
+    console.log('handle')
     joinRoom({ username: user.username, roomId: room })
       .then((roomId) => {
         toast.success("Connected")
-        router.push("/[roomId]", `/${roomId}`)
+        router.push("/[roomName]", `/${roomId}`)
       })
       .catch((error) => {
         toast.error(error.message)
