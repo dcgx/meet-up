@@ -1,27 +1,22 @@
 import Head from "next/head"
 import { useEffect, useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import { signInWithGitHub, onAuthStateChanged, signOut } from "../firebase"
 import { useRoomContext } from "../context/RoomContext"
 import { useRouter } from "next/router"
 import { AiFillGithub } from "react-icons/ai"
+import { useAuth } from "../hooks/useAuth"
 
 export default function Home() {
+  const { signInWithProvider, getCurrentUser, isAuthenticated } = useAuth()
   const router = useRouter()
-  const [authenticated, setAuthenticated] = useState(false)
   const [room, setRoom] = useState(null)
   const [user, setUser] = useState(null)
   const { createRoom, joinRoom } = useRoomContext()
 
-  useEffect(() => {
-    onAuthStateChanged((user) => {
-      setUser(user)
-      setAuthenticated(true)
-    })
-  }, [])
-
-  const handleCreateRoom = () => {
-    createRoom({ username: user.username })
+  const handleCreateRoom = async () => {
+    const currentUser = await getCurrentUser()
+    console.log({ currentUser })
+    createRoom({ username: currentUser.data.user.identities[0].identity_data.user_name })
       .then((roomName) => {
         toast.success("Connected")
         router.push("/[roomName]", `/${roomName}`)
@@ -32,7 +27,7 @@ export default function Home() {
   }
 
   const handleJoinRoom = (e) => {
-    console.log('handle')
+    console.log("handle")
     joinRoom({ username: user.username, roomId: room })
       .then((roomId) => {
         toast.success("Connected")
@@ -44,27 +39,28 @@ export default function Home() {
   }
 
   const handleSignOut = async () => {
-    signOut().then(() => {
-      toast.success("Successfully logged out")
-      setUser(null)
-      setAuthenticated(false)
-    })
+    // signOut().then(() => {
+    //   toast.success("Successfully logged out")
+    //   setUser(null)
+    //   setAuthenticated(false)
+    // })
   }
 
   const handleSignInWithGitHub = async () => {
-    signInWithGitHub()
-      .then((user) => {
-        // const { displayName, email, photoURL } = user;
-        setUser(user)
-        setAuthenticated(true)
-        console.log({ user })
-        toast.success(`Authenticated as ${user.email}`)
-      })
-      .catch(() => {
-        setAuthenticated(false)
-      })
+    return signInWithProvider("github")
+    // signInWithGitHub()
+    //   .then((user) => {
+    //     // const { displayName, email, photoURL } = user;
+    //     setUser(user)
+    //     setAuthenticated(true)
+    //     console.log({ user })
+    //     toast.success(`Authenticated as ${user.email}`)
+    //   })
+    //   .catch(() => {
+    //     setAuthenticated(false)
+    //   })
   }
-
+  console.log({ isAuthenticated })
   return (
     <div>
       <Head>
@@ -97,7 +93,7 @@ export default function Home() {
             </p>
 
             <div className="text-left w-full">
-              {authenticated ? (
+              {isAuthenticated ? (
                 <div className="flex items-center justify-between">
                   <div className="items-center flex">
                     <button
