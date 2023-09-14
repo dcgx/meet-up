@@ -1,7 +1,4 @@
-import { useUser } from "@supabase/auth-helpers-react"
-import { useRouter } from "next/router"
 import { useState } from "react"
-import toast, { Toaster } from "react-hot-toast"
 
 const DEBOUNCE_TIMEOUT = 320
 const MIN_ROOM_NAME_LENGTH = 11

@@ -1,12 +1,14 @@
 import Head from "next/head"
+import { useRouter } from "next/router"
 import { useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
+import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react"
+
 import { useRoomContext } from "../context/RoomContext"
-import { useRouter } from "next/router"
+
 import { AiFillGithub } from "react-icons/ai"
 import { HiOutlineLogout } from "react-icons/hi"
 
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react"
 import Spinner from "../components/Spinner"
 import InputMask from "react-input-mask"
 
