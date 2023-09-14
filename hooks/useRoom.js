@@ -1,7 +1,11 @@
+import { useUser } from "@supabase/auth-helpers-react"
+import { useRouter } from "next/router"
 import { useState } from "react"
+import toast, { Toaster } from "react-hot-toast"
 
 const DEBOUNCE_TIMEOUT = 320
-const MIN_ROOM_NAME_LENGTH = 16
+const MIN_ROOM_NAME_LENGTH = 11
+const VALIDATE_ROOM_NAME_REGEX = /^[a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+$/
 
 export function useRoom() {
   const [token, setToken] = useState(null)
@@ -10,6 +14,13 @@ export function useRoom() {
   const [room, setRoom] = useState(null)
   const [isLoading, setLoading] = useState(false)
   const [dominantSpeaker, setDominantSpeaker] = useState([])
+
+  const isValidRoomName = (roomName) => {
+    return (
+      roomName.length >= MIN_ROOM_NAME_LENGTH &&
+      VALIDATE_ROOM_NAME_REGEX.test(roomName)
+    )
+  }
 
   const createRoom = async ({ username }) => {
     setLoading(true)
@@ -30,16 +41,12 @@ export function useRoom() {
 
   const joinRoom = async ({ username, roomId }) => {
     setLoading(true)
-    console.log({ username, roomId })
     if (roomId === "" || roomId.length < 12) {
       setLoading(false)
       throw new Error(
         "No se encontró la sala a la que intentas unirte. Por favor, verifica el nombre de la sala  y vuelve a intentarlo."
       )
     }
-
-    let countOfParticipants = participants.length
-
     const data = await fetch("/api/get-token", {
       method: "PUT",
       headers: {
@@ -48,11 +55,7 @@ export function useRoom() {
       body: JSON.stringify({ identity: username, room: roomId }),
     }).then((res) => res.json())
 
-    console.log(data, "data")
     const { token } = data
-
-    localStorage.setItem("room.id", roomId)
-    localStorage.setItem("room.token", token)
 
     setLoading(false)
     setToken(token)
@@ -66,6 +69,7 @@ export function useRoom() {
     participants,
     dominantSpeaker,
     isLoading,
+    isValidRoomName,
     setParticipants,
     setRoom,
     setDominantSpeaker,
