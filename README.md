@@ -12,5 +12,6 @@ With meet-up you can:
 ## Build with
 
 - [Next.js](https://nextjs.org/)
-- [Firebase](https://firebase.google.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Supabase](https://supabase.com/)
 - [Twillio Video](https://www.twilio.com/docs/video)
