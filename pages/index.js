@@ -1,22 +1,24 @@
 import Head from "next/head"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
 import { useRoomContext } from "../context/RoomContext"
 import { useRouter } from "next/router"
 import { AiFillGithub } from "react-icons/ai"
-import { useAuth } from "../hooks/useAuth"
+import { HiOutlineLogout } from "react-icons/hi"
+import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react"
 
 export default function Home() {
-  const { signInWithProvider, getCurrentUser, isAuthenticated } = useAuth()
   const router = useRouter()
-  const [room, setRoom] = useState(null)
-  const [user, setUser] = useState(null)
+  const user = useUser()
+  const supabase = useSupabaseClient()
   const { createRoom, joinRoom } = useRoomContext()
 
+  const [room, setRoom] = useState(null)
+
+  const isAuthenticated = !!user
+
   const handleCreateRoom = async () => {
-    const currentUser = await getCurrentUser()
-    console.log({ currentUser })
-    createRoom({ username: currentUser.data.user.identities[0].identity_data.user_name })
+    createRoom({ username: user.identities[0].identity_data.user_name })
       .then((roomName) => {
         toast.success("Connected")
         router.push("/[roomName]", `/${roomName}`)
@@ -27,8 +29,7 @@ export default function Home() {
   }
 
   const handleJoinRoom = (e) => {
-    console.log("handle")
-    joinRoom({ username: user.username, roomId: room })
+    joinRoom({ username: user.identities[0].identity_data.user_name, roomId: room })
       .then((roomId) => {
         toast.success("Connected")
         router.push("/[roomName]", `/${roomId}`)
@@ -38,29 +39,18 @@ export default function Home() {
       })
   }
 
-  const handleSignOut = async () => {
-    // signOut().then(() => {
-    //   toast.success("Successfully logged out")
-    //   setUser(null)
-    //   setAuthenticated(false)
-    // })
+  const handleSignInWithGitHub = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "github",
+      options: {
+        redirectTo:
+          process.env.NODE_ENV !== "production"
+            ? "http://localhost:3000/api/auth/callback"
+            : "https://talkimeet.vercel.app/api/auth/callback",
+      },
+    })
   }
 
-  const handleSignInWithGitHub = async () => {
-    return signInWithProvider("github")
-    // signInWithGitHub()
-    //   .then((user) => {
-    //     // const { displayName, email, photoURL } = user;
-    //     setUser(user)
-    //     setAuthenticated(true)
-    //     console.log({ user })
-    //     toast.success(`Authenticated as ${user.email}`)
-    //   })
-    //   .catch(() => {
-    //     setAuthenticated(false)
-    //   })
-  }
-  console.log({ isAuthenticated })
   return (
     <div>
       <Head>
@@ -75,10 +65,21 @@ export default function Home() {
             <h1 className="font-bold text-3xl text-slate-700">Talki👾meet</h1>
           </div>
 
-          <a className="flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 border border-slate-300 px-5 py-2 rounded-lg">
-            <AiFillGithub size={26} />
-            Repositorio
-          </a>
+          <div className="flex gap-4">
+            <a className="flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 border border-slate-300 px-5 py-2 rounded-lg">
+              <AiFillGithub size={26} />
+              Repositorio
+            </a>
+
+            {isAuthenticated && (
+              <a
+                onClick={() => supabase.auth.signOut()}
+                className="flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100 border border-slate-300 px-5 py-2 rounded-lg"
+              >
+                <HiOutlineLogout size={26} />
+              </a>
+            )}
+          </div>
         </header>
 
         <div className="w-full h-full px-20 my-20 py-5 m-0 mx-auto text-center grid grid-cols-2">
