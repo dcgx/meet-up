@@ -2,7 +2,7 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react"
+import { useUser, useSupabaseClient, useSession } from "@supabase/auth-helpers-react"
 
 import { useRoomContext } from "../context/RoomContext"
 
@@ -15,8 +15,9 @@ import InputMask from "react-input-mask"
 export default function Home() {
   const router = useRouter()
   const user = useUser()
+  const session = useSession()
   const supabase = useSupabaseClient()
-  
+
   const { createRoom, joinRoom, isValidRoomName } = useRoomContext()
 
   const [roomName, setRoomName] = useState(null)
@@ -39,21 +40,34 @@ export default function Home() {
     setRoomName(e.target.value)
     if (isValidRoomName(e.target.value)) {
       setIsJoiningRoom(true)
-      return joinRoom({
-        username: user.user_metadata.user_name,
-        roomId: e.target.value,
+      fetch(`/api/room/${roomName}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
       })
-        .then((roomId) => {
-          toast.loading(`Contectando a ${roomId}...`)
-          setTimeout(() => {
-            toast.dismiss()
-            toast.success("Conectado con éxito")
-            toast.loading(`Redirigiendo a la sala ${roomId}...`)
-            // router.push("/[roomName]", `/${roomId}`)
-          }, 4000)
-          // router.push("/[roomName]", `/${roomId}`)
+        .then((res) => {
+          toast.loading(`Conectando a ${roomUniqueName}...`)
+          return joinRoom({
+            username: user.user_metadata.user_name,
+            roomId: e.target.value,
+          })
+            .then((roomUniqueName) => {
+              toast.dismiss()
+              toast.success("Conectado con éxito")
+
+              setTimeout(() => {
+                toast.loading(`Redirigiendo a la sala ${roomUniqueName}...`)
+                router.push("/[roomName]", `/${roomUniqueName}`)
+              }, 2000)
+            })
+            .finally(() => setIsJoiningRoom(false))
         })
-        .finally(() => setIsJoiningRoom(false))
+        .catch((error) => {
+          setIsJoiningRoom(false)
+          toast.error("El código de la sala no es válido")
+        })
     }
   }
 
