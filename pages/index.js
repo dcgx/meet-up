@@ -1,24 +1,32 @@
 import Head from "next/head"
+import { useRouter } from "next/router"
 import { useState } from "react"
 import toast, { Toaster } from "react-hot-toast"
+import { useUser, useSupabaseClient, useSession } from "@supabase/auth-helpers-react"
+
 import { useRoomContext } from "../context/RoomContext"
-import { useRouter } from "next/router"
+
 import { AiFillGithub } from "react-icons/ai"
 import { HiOutlineLogout } from "react-icons/hi"
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react"
+
+import Spinner from "../components/Spinner"
+import InputMask from "react-input-mask"
 
 export default function Home() {
   const router = useRouter()
   const user = useUser()
+  const session = useSession()
   const supabase = useSupabaseClient()
-  const { createRoom, joinRoom } = useRoomContext()
 
-  const [room, setRoom] = useState(null)
+  const { createRoom, joinRoom, isValidRoomName } = useRoomContext()
+
+  const [roomName, setRoomName] = useState(null)
+  const [isJoiningRoom, setIsJoiningRoom] = useState(false)
 
   const isAuthenticated = !!user
 
   const handleCreateRoom = async () => {
-    createRoom({ username: user.identities[0].identity_data.user_name })
+    createRoom({ username: user.user_metadata.user_name })
       .then((roomName) => {
         toast.success("Connected")
         router.push("/[roomName]", `/${roomName}`)
@@ -28,14 +36,53 @@ export default function Home() {
       })
   }
 
+  const handleInputRoomNameAndJoinRoom = (e) => {
+    setRoomName(e.target.value)
+    if (isValidRoomName(e.target.value)) {
+      setIsJoiningRoom(true)
+      fetch(`/api/room/${roomName}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      })
+        .then((res) => {
+          toast.loading(`Conectando a ${roomUniqueName}...`)
+          return joinRoom({
+            username: user.user_metadata.user_name,
+            roomId: e.target.value,
+          })
+            .then((roomUniqueName) => {
+              toast.dismiss()
+              toast.success("Conectado con éxito")
+
+              setTimeout(() => {
+                toast.loading(`Redirigiendo a la sala ${roomUniqueName}...`)
+                router.push("/[roomName]", `/${roomUniqueName}`)
+              }, 2000)
+            })
+            .finally(() => setIsJoiningRoom(false))
+        })
+        .catch((error) => {
+          setIsJoiningRoom(false)
+          toast.error("El código de la sala no es válido")
+        })
+    }
+  }
+
   const handleJoinRoom = (e) => {
-    joinRoom({ username: user.identities[0].identity_data.user_name, roomId: room })
+    setIsJoiningRoom(true)
+    joinRoom({ username: user.user_metadata.user_name, roomId: roomName })
       .then((roomId) => {
         toast.success("Connected")
         router.push("/[roomName]", `/${roomId}`)
       })
       .catch((error) => {
         toast.error(error.message)
+      })
+      .finally(() => {
+        setIsJoiningRoom(false)
       })
   }
 
@@ -95,29 +142,31 @@ export default function Home() {
 
             <div className="text-left w-full">
               {isAuthenticated ? (
-                <div className="flex items-center justify-between">
+                <div className="flex items-center">
                   <div className="items-center flex">
                     <button
                       onClick={handleCreateRoom}
-                      className="px-6 py-3  rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
+                      className="px-6 py-3 w-40 rounded-md bg-purple-900 text-zinc-100 text-sm font-medium"
                     >
                       Nueva reunión
                     </button>
                   </div>
 
-                  <div className="flex-1 mx-5 items-center">
-                    <input
-                      value={room}
-                      onInput={(e) => setRoom(e.target.value)}
-                      className="my-6 border py-3 px-3 shadow rounded focus:outline-none font-mono font-normal w-1/2"
+                  <div className="flex w-full justify-between items-center mx-5 ">
+                    <InputMask
+                      value={roomName}
+                      onInput={handleInputRoomNameAndJoinRoom}
+                      className="w-full my-6 border py-3 px-3 shadow rounded focus:outline-none font-mono font-normal "
                       placeholder="Código de ejemplo: abc-mnps-xyx"
-                    />
+                      mask="aaa-aaaa-aaa"
+                      maskChar=" "
+                    ></InputMask>
                     <button
                       type="submit"
                       onClick={handleJoinRoom}
                       className="px-6 py-3 mx-5 rounded-md bg-sky-500 text-zinc-100 text-sm font-medium"
                     >
-                      Unirse
+                      {isJoiningRoom ? <Spinner /> : "Unirse"}
                     </button>
                   </div>
                 </div>

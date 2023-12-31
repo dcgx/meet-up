@@ -6,9 +6,9 @@ const serviceSid = config.chatSid
 
 const generateToken = () => {
   return new AccessToken(
-    config.accountSid,
-    config.apiKey,
-    config.apiSecret
+    config.twilio.accountSid,
+    config.twilio.apiKey,
+    config.twilio.apiSecret
   )
 }
 
